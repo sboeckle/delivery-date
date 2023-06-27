@@ -1,0 +1,30 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# dependencies
+node_modules/
+
+# testing
+coverage/
+.nyc_output
+
+# performance tests
+artifacts
+
+# production
+dist/
+
+# misc
+npm-debug.log*
+
+# swagger
+/public/api/**
+!/public/api/config.*.js
+!/public/api/*.yaml
+!/public/api/*.json
+
+/storage/
+
+.config
+
+dump/
+.bash_history

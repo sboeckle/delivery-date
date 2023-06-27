@@ -1,0 +1,16 @@
+{
+  "type": "module",
+  "name": "mathem-products",
+  "version": "0.0.0",
+  "private": true,
+  "devDependencies": {
+    "@types/glob": "*",
+    "@types/node": "*",
+    "glob": "*",
+    "tsx": "*",
+    "typescript": "*"
+  },
+  "scripts": {
+    "test": "glob -c \"node --loader tsx --no-warnings --test\" \"./test/*.test.ts\""
+  }
+}
