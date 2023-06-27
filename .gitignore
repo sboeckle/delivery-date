@@ -22,6 +22,8 @@ npm-debug.log*
 !/public/api/*.yaml
 !/public/api/*.json
 
+.DS_Store
+
 /storage/
 
 .config

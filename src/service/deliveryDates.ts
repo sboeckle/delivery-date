@@ -1,4 +1,9 @@
-import { ProductsDeliverableByDay, DeliveryDate, Product } from "./types.ts";
+import {
+  ProductsDeliverableByDay,
+  DeliveryDate,
+  Product,
+  DeliveryDatesInput,
+} from "./types.ts";
 import { addDays, differenceInDays } from "../util.ts";
 
 // All fridays are considered green field deliveries
@@ -18,10 +23,6 @@ function getNumberOfProductsDeliverableByDay(
   products: Product[],
   currentDayOfTheWeek: number
 ): ProductsDeliverableByDay {
-  // Other implementation Ideas:
-  // Idea 1 calculate min/max day for product to summarize filters and use only one filter
-  // Idea 2: use map of all potential days, iterate over that instead of products
-  //   and then remove days as soon as one product can not be delivered on that day
   const productsDeliverableByDay: ProductsDeliverableByDay = {};
 
   products.forEach((product) => {
@@ -97,11 +98,7 @@ export function getDeliveryDates({
   postalCode,
   products,
   today = new Date(new Date().toDateString()),
-}: {
-  postalCode: string;
-  products: Product[];
-  today?: Date;
-}) {
+}: DeliveryDatesInput) {
   const productsDeliveryableByDay = getNumberOfProductsDeliverableByDay(
     products,
     today.getUTCDay() // UTC since our week starts on Monday = 0

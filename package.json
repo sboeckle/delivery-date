@@ -3,6 +3,7 @@
   "name": "delivery-dates",
   "version": "0.0.0",
   "private": true,
+  "main": "src/index.ts",
   "devDependencies": {
     "@types/glob": "*",
     "@types/node": "*",
@@ -11,6 +12,7 @@
     "typescript": "*"
   },
   "scripts": {
+    "start": "tsx ./src/index.ts",
     "test": "glob -c \"node --loader tsx --no-warnings --test\" \"./test/*.test.ts\""
   }
 }

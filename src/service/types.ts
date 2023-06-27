@@ -9,6 +9,12 @@ export type Product = {
 
 export type ProductsDeliverableByDay = { [index: number]: number };
 
+export type DeliveryDatesInput = {
+  postalCode: string;
+  products: Product[];
+  today?: Date;
+};
+
 export type DeliveryDate = {
   postalCode: string;
   deliveryDate: string;

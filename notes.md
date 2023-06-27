@@ -1,16 +1,16 @@
 ### Todo
 
-Delivery Date functionality
+Delivery Dates functionality
 
 ### Input
 
 - postal code
 - list of products
 
-{
-postalCode: string,
-products: Products[]
-}
+  {
+  postalCode: string,
+  products: Products[]
+  }
 
 ### Output
 
@@ -48,12 +48,12 @@ Product
 
 Green Deliveries:
 
-- e.g. every Monday
+- e.g. every Friday
 
 ### Rules
 
-- not valid if can not be delivered today ?
-- calc with daysInAdvance if product can be delivered in time
+- Not valid if not all products can be delivered
+- Calc with daysInAdvance if product can be delivered in time
 - All external products need to be ordered 5 days in advance
 - Temporary products can only be ordered within the current week (Mon-Sun).
 - sort Green (if within next 3 days) > date ascending
@@ -64,26 +64,13 @@ Green Deliveries:
   - BUT input amount is not that big (customer ordering "some" items)
 - go with simple straight forward solution
 
-  /\*
-
-  Question: All the products must have the same delivery day matching for the order?
-  -> implement filters that keep the earliest delivery days and skip others (keep special cases)
-  OR do we return delivery days for all products separately?
-  -> maybe too easy for a task
-
-Solution:
+Solutions:
 
 1. calculate delivery dates per product for next 14 days
-   a. function that filters if date is weekday that product allows
-   b. use daysInAdvance
-   c. special cases temporary -> only in current week; external products 5 days in advance
 
-2. Make green delivery fnc
+   - create array of days; push number of unique deliverable items into map; return map entries where # of entries === # of products
+   - write filters for specific requirement and for array
+   - write sorting function
 
-3. sort stuff by date
-   a. sort green delivery things if delivery date is within next 3 days
-   \*/
-
-// IDEA: create Map of days; push number of unique deliverable items into map; return map entries where # of entries === # of products
-
-// calc if weekday
+2. use map of all potential delivery days, iterate over that instead of products
+   and then remove days as soon as one product can not be delivered on that day
