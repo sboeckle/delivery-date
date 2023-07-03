@@ -1,4 +1,5 @@
 import {
+  NUMBER_OF_DAYS_AHEAD,
   GREEN_DELIVERY_DAY,
   EXTERNAL_PRODUCT_DELIVERY_DAYS_IN_ADVANCE,
   TEMPORARY_PRODUCT_ONLY_DELIVERABLE_UNTIL_DAY,
@@ -23,6 +24,7 @@ function getNumberOfProductsDeliverableByDay(
   products: Product[],
   currentDayOfTheWeek: number
 ): ProductsDeliverableByDay {
+  const endDay = NUMBER_OF_DAYS_AHEAD + currentDayOfTheWeek;
   const productsDeliverableByDay: ProductsDeliverableByDay = {};
 
   products.forEach((product) => {
@@ -30,7 +32,9 @@ function getNumberOfProductsDeliverableByDay(
       // current week, filter out days that are in the past already
       ...product.deliveryDays.filter((day) => day >= currentDayOfTheWeek),
       // next week
-      ...product.deliveryDays.map((n: number) => (n += 7)),
+      ...product.deliveryDays
+        .map((n: number) => (n += 7))
+        .filter((day) => day < endDay),
     ]
       .filter((day) => day >= currentDayOfTheWeek + product.daysInAdvance)
       .filter((day) =>

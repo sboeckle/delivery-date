@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { getDeliveryDates } from "../src/service/deliveryDates.ts";
 import { Product } from "../src/service/types.ts";
 
-const testDateTuesday = new Date("2023-06-26T00:00:00Z");
+const testDateMonday = new Date("2023-06-26T00:00:00Z");
 
 type TestDataSet = {
   input: {
@@ -27,7 +27,7 @@ describe("delivery dates tests with temporary products", async () => {
             daysInAdvance: 0,
           },
         ],
-        todayTestDate: testDateTuesday,
+        todayTestDate: testDateMonday,
       },
       expectedNumberOfDates: 3,
     },
@@ -54,7 +54,7 @@ describe("delivery dates tests with temporary products", async () => {
             daysInAdvance: 0,
           },
         ],
-        todayTestDate: testDateTuesday,
+        todayTestDate: testDateMonday,
       },
       expectedNumberOfDates: 1, // only day 4 in week one intersects
     },
