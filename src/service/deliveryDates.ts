@@ -1,16 +1,16 @@
 import {
+  GREEN_DELIVERY_DAY,
+  EXTERNAL_PRODUCT_DELIVERY_DAYS_IN_ADVANCE,
+  TEMPORARY_PRODUCT_ONLY_DELIVERABLE_UNTIL_DAY,
+  GREEN_DELIVERY_PRIORITIZED_IF_DELIVERABLY_IN_NEXT_DAYS,
+} from "../config.json";
+import {
   ProductsDeliverableByDay,
   DeliveryDate,
   Product,
   DeliveryDatesInput,
 } from "./types.ts";
-import { addDays, differenceInDays } from "../util.ts";
-
-// All fridays are considered green field deliveries
-const GREEN_DELIVERY_DAY = 4;
-const EXTERNAL_PRODUCT_DELIVERY_DAYS_IN_ADVANCE = 5;
-const TEMPORARY_PRODUCT_ONLY_DELIVERABLE_UNTIL_DAY = 6;
-const GREEN_DELIVERY_PRIORITIZED_IF_DELIVERABLY_IN_NEXT_DAYS = 3;
+import { getDateForDayInFuture, differenceInDays } from "../dateTimeUtil.ts";
 
 /**
  * generates object with number of products that are deliverably on a day
@@ -53,6 +53,9 @@ function getNumberOfProductsDeliverableByDay(
   return productsDeliverableByDay;
 }
 
+const isGreenDeliveryDay = (day: number) =>
+  day === GREEN_DELIVERY_DAY || day === GREEN_DELIVERY_DAY + 7;
+
 /**
  * generates deliveryDates based on the deliveryDays where all the products (numberOfProducts) can be delivered
  * @param deliveryDays
@@ -61,7 +64,7 @@ function getNumberOfProductsDeliverableByDay(
  * @param today
  * @returns
  */
-export function generateDeliveryDates({
+function generateDeliveryDates({
   deliveryDays,
   numberOfProducts,
   postalCode,
@@ -73,35 +76,44 @@ export function generateDeliveryDates({
   today: Date;
 }): DeliveryDate[] {
   const deliveryDates: DeliveryDate[] = [];
-
   Object.entries(deliveryDays).forEach(([day, numberOfProductsDeliverable]) => {
     if (numberOfProductsDeliverable != numberOfProducts) return;
-    const dateForDelivery = addDays(today, parseInt(day));
+    const dateForDelivery = getDateForDayInFuture(today, parseInt(day));
     const deliveryDate = {
       postalCode,
       deliveryDate: dateForDelivery.toISOString(),
-      isGreenDelivery: parseInt(day) === GREEN_DELIVERY_DAY,
+      isGreenDelivery: isGreenDeliveryDay(parseInt(day)),
     };
-    if (
-      deliveryDate.isGreenDelivery &&
-      differenceInDays(today, dateForDelivery) >
-        GREEN_DELIVERY_PRIORITIZED_IF_DELIVERABLY_IN_NEXT_DAYS
-    ) {
-      deliveryDates.unshift(deliveryDate);
-    } else deliveryDates.push(deliveryDate);
+    deliveryDates.push(deliveryDate);
   });
 
+  sortDeliveryDates(deliveryDates, today);
+
   return deliveryDates;
+}
+
+function sortDeliveryDates(dates: DeliveryDate[], today: Date): void {
+  dates.sort((a, b) => {
+    if (
+      a.isGreenDelivery > b.isGreenDelivery &&
+      differenceInDays(new Date(a.deliveryDate), today) <=
+        GREEN_DELIVERY_PRIORITIZED_IF_DELIVERABLY_IN_NEXT_DAYS
+    )
+      return -1;
+    if (new Date(a.deliveryDate) < new Date(b.deliveryDate)) return -1;
+    if (new Date(a.deliveryDate) > new Date(b.deliveryDate)) return 1;
+    return 0;
+  });
 }
 
 export function getDeliveryDates({
   postalCode,
   products,
-  today = new Date(new Date().toDateString()),
+  today = new Date(),
 }: DeliveryDatesInput) {
   const productsDeliveryableByDay = getNumberOfProductsDeliverableByDay(
     products,
-    today.getUTCDay() // UTC since our week starts on Monday = 0
+    today.getUTCDay()
   );
 
   const deliveryDates = generateDeliveryDates({

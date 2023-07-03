@@ -13,6 +13,9 @@
   },
   "scripts": {
     "start": "tsx ./src/index.ts",
-    "test": "glob -c \"node --loader tsx --no-warnings --test\" \"./test/*.test.ts\""
+    "test": "glob -c \"node --loader tsx --no-warnings --test\" \"./test/**.test.ts\""
+  },
+  "dependencies": {
+    "dayjs": "^1.11.9"
   }
 }

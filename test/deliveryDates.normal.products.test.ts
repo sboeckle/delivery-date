@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { getDeliveryDates } from "../src/service/deliveryDates.ts";
 import { Product } from "../src/service/types.ts";
 
-const testDateTuesday = new Date(new Date("2023-06-26T00:00:00Z"));
+const testDateTuesday = new Date("2023-06-26T00:00:00Z");
 
 type TestDataSet = {
   input: {

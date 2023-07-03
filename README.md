@@ -16,4 +16,5 @@ Run the following in terminal of your choice from the project root folder:
 
 ## Tests
 
-some tests can be run by running `npm run test`
+Some tests have been added, check the `./test` folder.
+They can be run using `npm run test`
