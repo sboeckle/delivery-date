@@ -5,17 +5,17 @@
   "private": true,
   "main": "src/index.ts",
   "devDependencies": {
-    "@types/glob": "*",
-    "@types/node": "*",
-    "glob": "*",
-    "tsx": "*",
-    "typescript": "*"
+    "@types/glob": "8.1.0",
+    "@types/node": "^20.3.1",
+    "glob": "^7.2.3"
   },
   "scripts": {
     "start": "tsx --no-warnings ./src/index.ts",
     "test": "glob -c \"node --loader tsx --no-warnings --test\" \"./test/**.test.ts\""
   },
   "dependencies": {
-    "dayjs": "^1.11.9"
+    "dayjs": "^1.11.9",
+    "tsx": "^3.12.7",
+    "typescript": "^5.1.3"
   }
 }
