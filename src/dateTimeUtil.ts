@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 
 /**
- * creates date for the given weekday relative in the future to the given date.
+ * creates and formats date for the given weekday relative in the future to the given date.
  * in standard format of ISO8601 e.g. 2023-06-26T02:00:00+02:00
  * @param today
  * @param weekDay
@@ -21,8 +21,4 @@ export function differenceInDays(date1: Date, date2: Date): number {
   return Math.ceil(
     Math.abs(date1.getTime() - date2.getTime()) / (1000 * 3600 * 24)
   );
-}
-
-export function formatDate(date: Date) {
-  return dayjs(date).format();
 }

@@ -22,6 +22,7 @@ describe("delivery dates tests with temporary products", async () => {
         products: [
           {
             productId: "1",
+            name: "name1",
             productType: "temporary", // i.e. only deliverable in first week
             deliveryDays: [0, 2, 4, 5],
             daysInAdvance: 0,
@@ -37,18 +38,21 @@ describe("delivery dates tests with temporary products", async () => {
         products: [
           {
             productId: "1",
+            name: "name1",
             productType: "temporary",
             deliveryDays: [0, 2, 4, 6],
             daysInAdvance: 0,
           },
           {
             productId: "2",
+            name: "name2",
             productType: "temporary",
             deliveryDays: [0, 1, 4, 6],
             daysInAdvance: 0,
           },
           {
             productId: "3",
+            name: "name3",
             productType: "temporary",
             deliveryDays: [1, 2, 4],
             daysInAdvance: 0,

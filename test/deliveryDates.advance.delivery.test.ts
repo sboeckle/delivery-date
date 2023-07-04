@@ -21,6 +21,7 @@ const testDataWithDaysInAdvance: TestDataSet[] = [
       products: [
         {
           productId: "1",
+          name: "name1",
           productType: "normal",
           deliveryDays: [1, 2, 4, 6],
           daysInAdvance: 3,
@@ -36,18 +37,21 @@ const testDataWithDaysInAdvance: TestDataSet[] = [
       products: [
         {
           productId: "1",
+          name: "name1",
           productType: "normal",
           deliveryDays: [1, 2, 4, 6],
           daysInAdvance: 3,
         },
         {
           productId: "2",
+          name: "name2",
           productType: "normal",
           deliveryDays: [2, 4],
           daysInAdvance: 1,
         },
         {
           productId: "3",
+          name: "name3",
           productType: "normal",
           deliveryDays: [2, 6],
           daysInAdvance: 2,
@@ -63,12 +67,14 @@ const testDataWithDaysInAdvance: TestDataSet[] = [
       products: [
         {
           productId: "1",
+          name: "name1",
           productType: "normal",
           deliveryDays: [1, 2, 4, 6],
           daysInAdvance: 0,
         },
         {
           productId: "2",
+          name: "name1",
           productType: "normal",
           deliveryDays: [3],
           daysInAdvance: 12,

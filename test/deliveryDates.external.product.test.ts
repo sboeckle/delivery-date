@@ -21,6 +21,7 @@ const testDataWithExternalProducts: TestDataSet[] = [
       products: [
         {
           productId: "1",
+          name: "name1",
           productType: "external", // i.e. 5 days in advance
           deliveryDays: [1, 2, 4, 6],
           daysInAdvance: 0,
@@ -36,12 +37,14 @@ const testDataWithExternalProducts: TestDataSet[] = [
       products: [
         {
           productId: "1",
+          name: "name1",
           productType: "external",
           deliveryDays: [1, 2, 4, 5],
           daysInAdvance: 0,
         },
         {
           productId: "2",
+          name: "name2",
           productType: "external",
           deliveryDays: [3],
           daysInAdvance: 0,

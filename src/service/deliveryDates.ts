@@ -1,6 +1,6 @@
 import {
-  NUMBER_OF_DAYS_AHEAD,
-  GREEN_DELIVERY_DAY,
+  CALCULATE_DELIVERY_FOR_NUMBER_OF_WEEKS_AHEAD,
+  GREEN_DELIVERY_WEEKDAY,
   GREEN_DELIVERY_PRIORITIZED_IF_DELIVERABLY_IN_NEXT_DAYS,
 } from "../config.json";
 import {
@@ -15,7 +15,7 @@ import {
   isProductDeliverableInAdvance,
   isExternalProductDeliverable,
   isTemporaryProductDeliverable,
-} from "./deliveryFilters.ts";
+} from "./deliveryDayFilters.ts";
 
 function generatePotentialDeliveryDaysForProduct(
   product: Product,
@@ -43,34 +43,32 @@ function getNumberOfProductsDeliverableByDay(
 ): ProductsDeliverableByDay {
   const currentWeekDay = today.getUTCDay();
   const productsDeliverableByDay: ProductsDeliverableByDay = {};
-  const weeksAhead = Math.floor(NUMBER_OF_DAYS_AHEAD / 7);
 
   products.forEach((product) => {
-    generatePotentialDeliveryDaysForProduct(product, weeksAhead).forEach(
-      (day) => {
-        // filters
-        if (isDeliveryDayInPastOrTooFarInFuture(day, currentWeekDay)) return;
-        if (!isProductDeliverableInAdvance(day, currentWeekDay, product))
-          return;
-        if (!isExternalProductDeliverable(day, currentWeekDay, product)) return;
-        if (!isTemporaryProductDeliverable(day, product)) return;
-        // keep day as deliverable for this product
-        if (!productsDeliverableByDay[day]) productsDeliverableByDay[day] = 1;
-        else productsDeliverableByDay[day]++;
-      },
-      productsDeliverableByDay
-    );
+    generatePotentialDeliveryDaysForProduct(
+      product,
+      CALCULATE_DELIVERY_FOR_NUMBER_OF_WEEKS_AHEAD
+    ).forEach((day) => {
+      // filters
+      if (isDeliveryDayInPastOrTooFarInFuture(day, currentWeekDay)) return;
+      if (!isProductDeliverableInAdvance(day, currentWeekDay, product)) return;
+      if (!isExternalProductDeliverable(day, currentWeekDay, product)) return;
+      if (!isTemporaryProductDeliverable(day, product)) return;
+      // keep day as deliverable for this product
+      if (!productsDeliverableByDay[day]) productsDeliverableByDay[day] = 1;
+      else productsDeliverableByDay[day]++;
+    }, productsDeliverableByDay);
   });
 
   return productsDeliverableByDay;
 }
 
-const isGreenDeliveryDay = (day: number) => day % 7 === GREEN_DELIVERY_DAY;
+const isGreenDeliveryDay = (day: number) => day % 7 === GREEN_DELIVERY_WEEKDAY;
 
 /**
- * generates DeliveryDates based on the days where all the products (numberOfProducts) can be delivered
+ * generates DeliveryDates based on the days where all the products (minNumberOfProductsDeliverable) can be delivered
  * @param deliveryDays
- * @param numberOfProducts
+ * @param minNumberOfProductsDeliverable
  * @param postalCode
  * @param today
  * @returns
@@ -100,6 +98,11 @@ function generateDeliveryDates({
   return deliveryDates;
 }
 
+/**
+ * Sorts DeliveryDate objects in array
+ * First green delivery days if they are close (see configs GREEN_DELIVERY_PRIORITIZED_IF_DELIVERABLY_IN_NEXT_DAYS)
+ * Then date ascending
+ */
 function sortDeliveryDates(dates: DeliveryDate[], today: Date): void {
   dates.sort((a, b) => {
     if (

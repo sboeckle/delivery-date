@@ -1,5 +1,5 @@
 import {
-  NUMBER_OF_DAYS_AHEAD,
+  CALCULATE_DELIVERY_FOR_NUMBER_OF_WEEKS_AHEAD,
   EXTERNAL_PRODUCT_DELIVERY_DAYS_IN_ADVANCE,
   TEMPORARY_PRODUCT_ONLY_DELIVERABLE_UNTIL_DAY,
 } from "../config.json";
@@ -11,7 +11,8 @@ export const isDeliveryDayInPastOrTooFarInFuture = (
   currentWeekDay: number
 ) =>
   dayOfDelivery < currentWeekDay ||
-  dayOfDelivery > NUMBER_OF_DAYS_AHEAD + currentWeekDay;
+  dayOfDelivery >
+    CALCULATE_DELIVERY_FOR_NUMBER_OF_WEEKS_AHEAD * 7 + currentWeekDay;
 
 export const isProductDeliverableInAdvance = (
   dayOfDelivery: number,
