@@ -1,8 +1,6 @@
 import {
   NUMBER_OF_DAYS_AHEAD,
   GREEN_DELIVERY_DAY,
-  EXTERNAL_PRODUCT_DELIVERY_DAYS_IN_ADVANCE,
-  TEMPORARY_PRODUCT_ONLY_DELIVERABLE_UNTIL_DAY,
   GREEN_DELIVERY_PRIORITIZED_IF_DELIVERABLY_IN_NEXT_DAYS,
 } from "../config.json";
 import {
@@ -12,56 +10,65 @@ import {
   DeliveryDatesInput,
 } from "./types.ts";
 import { getDateForDayInFuture, differenceInDays } from "../dateTimeUtil.ts";
+import {
+  isDeliveryDayInPastOrTooFarInFuture,
+  isProductDeliverableInAdvance,
+  isExternalProductDeliverable,
+  isTemporaryProductDeliverable,
+} from "./deliveryFilters.ts";
+
+function generatePotentialDeliveryDaysForProduct(
+  product: Product,
+  weeksAhead: number
+): number[] {
+  const potentialDeliveryDays: number[] = [];
+  for (let j = 0; j < weeksAhead; j++) {
+    potentialDeliveryDays.push.apply(
+      potentialDeliveryDays,
+      product.deliveryDays.map((d) => (j < 1 ? d : (d += j * 7)))
+    );
+  }
+  return potentialDeliveryDays;
+}
 
 /**
  * generates object with number of products that are deliverably on a day
- * hard coded to look 14 days (two weeks) ahead
  * @param Product product
  * @param number currentDayOfTheWeek
  * @returns ProductsDeliverableByDay
  */
 function getNumberOfProductsDeliverableByDay(
   products: Product[],
-  currentDayOfTheWeek: number
+  today: Date
 ): ProductsDeliverableByDay {
-  const endDay = NUMBER_OF_DAYS_AHEAD + currentDayOfTheWeek;
+  const currentWeekDay = today.getUTCDay();
   const productsDeliverableByDay: ProductsDeliverableByDay = {};
+  const weeksAhead = Math.floor(NUMBER_OF_DAYS_AHEAD / 7);
 
   products.forEach((product) => {
-    [
-      // current week, filter out days that are in the past already
-      ...product.deliveryDays.filter((day) => day >= currentDayOfTheWeek),
-      // next week
-      ...product.deliveryDays
-        .map((n: number) => (n += 7))
-        .filter((day) => day < endDay),
-    ]
-      .filter((day) => day >= currentDayOfTheWeek + product.daysInAdvance)
-      .filter((day) =>
-        product.productType === "external"
-          ? day >=
-            currentDayOfTheWeek + EXTERNAL_PRODUCT_DELIVERY_DAYS_IN_ADVANCE
-          : true
-      )
-      .filter((day) =>
-        product.productType === "temporary"
-          ? day <= TEMPORARY_PRODUCT_ONLY_DELIVERABLE_UNTIL_DAY
-          : true
-      )
-      .forEach((day) => {
+    generatePotentialDeliveryDaysForProduct(product, weeksAhead).forEach(
+      (day) => {
+        // filters
+        if (isDeliveryDayInPastOrTooFarInFuture(day, currentWeekDay)) return;
+        if (!isProductDeliverableInAdvance(day, currentWeekDay, product))
+          return;
+        if (!isExternalProductDeliverable(day, currentWeekDay, product)) return;
+        if (!isTemporaryProductDeliverable(day, product)) return;
+        // keep day as deliverable for this product
         if (!productsDeliverableByDay[day]) productsDeliverableByDay[day] = 1;
         else productsDeliverableByDay[day]++;
-      });
+      },
+      productsDeliverableByDay
+    );
   });
 
   return productsDeliverableByDay;
 }
 
-const isGreenDeliveryDay = (day: number) =>
-  day === GREEN_DELIVERY_DAY || day === GREEN_DELIVERY_DAY + 7;
+const isGreenDeliveryDay = (day: number) => day % 7 === GREEN_DELIVERY_DAY;
 
 /**
- * generates deliveryDates based on the deliveryDays where all the products (numberOfProducts) can be delivered
+ * generates DeliveryDates based on the days where all the products (numberOfProducts) can be delivered
  * @param deliveryDays
  * @param numberOfProducts
  * @param postalCode
@@ -70,18 +77,18 @@ const isGreenDeliveryDay = (day: number) =>
  */
 function generateDeliveryDates({
   deliveryDays,
-  numberOfProducts,
+  minNumberOfProductsDeliverable,
   postalCode,
   today,
 }: {
   deliveryDays: ProductsDeliverableByDay;
-  numberOfProducts: number;
+  minNumberOfProductsDeliverable: number;
   postalCode: string;
   today: Date;
 }): DeliveryDate[] {
   const deliveryDates: DeliveryDate[] = [];
   Object.entries(deliveryDays).forEach(([day, numberOfProductsDeliverable]) => {
-    if (numberOfProductsDeliverable != numberOfProducts) return;
+    if (numberOfProductsDeliverable != minNumberOfProductsDeliverable) return;
     const deliveryDate = {
       postalCode,
       deliveryDate: getDateForDayInFuture(today, parseInt(day)),
@@ -89,8 +96,6 @@ function generateDeliveryDates({
     };
     deliveryDates.push(deliveryDate);
   });
-
-  sortDeliveryDates(deliveryDates, today);
 
   return deliveryDates;
 }
@@ -116,15 +121,17 @@ export function getDeliveryDates({
 }: DeliveryDatesInput) {
   const productsDeliveryableByDay = getNumberOfProductsDeliverableByDay(
     products,
-    today.getUTCDay()
+    today
   );
 
   const deliveryDates = generateDeliveryDates({
     deliveryDays: productsDeliveryableByDay,
-    numberOfProducts: products.length,
+    minNumberOfProductsDeliverable: products.length,
     postalCode,
     today,
   });
+
+  sortDeliveryDates(deliveryDates, today);
 
   return deliveryDates;
 }
