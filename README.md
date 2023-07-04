@@ -2,7 +2,8 @@
 
 ## Prerequisites
 
-make sure to have `node`and `npm` installed (here node >v.20 is used, see .nvmrc. but should run with anything > v.18).
+- make sure to have `node` and `npm` (or yarn, then replace the `npm` commands with `yarn`) installed.
+- node >v.20 was used (see .nvmrc.) but should run with anything > v.18.
 
 ## How to run
 
