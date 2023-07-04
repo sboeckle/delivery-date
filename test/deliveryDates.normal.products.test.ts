@@ -106,4 +106,77 @@ describe("delivery dates tests for normal products", async () => {
       })
     );
   });
+
+  it(`returns with correct dates`, () => {
+    const testInput = {
+      postalCode: "11346",
+      products: [
+        {
+          productId: "1",
+          productType: "normal",
+          deliveryDays: [1, 2, 4, 6],
+          daysInAdvance: 0,
+        },
+      ] as Product[],
+      todayTestDate: testDateMonday,
+    };
+
+    const expectedOutputWithoutTimezone = [
+      {
+        postalCode: "11346",
+        deliveryDate: "2023-06-26",
+        isGreenDelivery: false,
+      },
+      {
+        postalCode: "11346",
+        deliveryDate: "2023-06-27",
+        isGreenDelivery: false,
+      },
+      {
+        postalCode: "11346",
+        deliveryDate: "2023-06-29",
+        isGreenDelivery: false,
+      },
+      {
+        postalCode: "11346",
+        deliveryDate: "2023-07-01",
+        isGreenDelivery: false,
+      },
+      {
+        postalCode: "11346",
+        deliveryDate: "2023-07-03",
+        isGreenDelivery: false,
+      },
+      {
+        postalCode: "11346",
+        deliveryDate: "2023-07-04",
+        isGreenDelivery: false,
+      },
+      {
+        postalCode: "11346",
+        deliveryDate: "2023-07-06",
+        isGreenDelivery: false,
+      },
+      {
+        postalCode: "11346",
+        deliveryDate: "2023-07-08",
+        isGreenDelivery: false,
+      },
+    ];
+
+    const { postalCode, products, todayTestDate } = testInput;
+    const out = getDeliveryDates({
+      postalCode,
+      products,
+      today: todayTestDate,
+    });
+    for (let i = 0; i < out.length; i++) {
+      const expected = expectedOutputWithoutTimezone[i];
+      const actual = out[i];
+      assert.equal(
+        new Date(expected.deliveryDate).getTime(),
+        new Date(actual.deliveryDate).getTime()
+      );
+    }
+  });
 });

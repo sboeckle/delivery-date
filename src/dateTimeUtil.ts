@@ -1,18 +1,20 @@
 import dayjs from "dayjs";
-import { NUMBER_OF_WEEKS_AHEAD } from "./config.json";
 
-export function getDateForDayInFuture(today: Date, weekDay: number): Date {
-  const dateCopy = new Date(today.getTime());
+/**
+ * creates date for the given weekday relative in the future to the given date.
+ * in standard format of ISO8601 e.g. 2023-06-26T02:00:00+02:00
+ * @param today
+ * @param weekDay
+ * @returns
+ */
+export function getDateForDayInFuture(today: Date, weekDay: number): string {
+  const dateCopy = dayjs(today).set("day", weekDay);
 
-  const nextDay = new Date(
-    dateCopy.setDate(
-      dateCopy.getDate() + ((7 - dateCopy.getDay() + weekDay) % 7 || 7)
-    )
-  );
-  // TODO support only one week in future?
-  if (weekDay >= 7) nextDay.setDate(nextDay.getDate() + 7);
-
-  return nextDay;
+  if (weekDay > 6) {
+    const weeksAhead = Math.floor(weekDay / 7);
+    dateCopy.add(weeksAhead * 6, "day");
+  }
+  return dateCopy.format();
 }
 
 export function differenceInDays(date1: Date, date2: Date): number {
@@ -22,6 +24,5 @@ export function differenceInDays(date1: Date, date2: Date): number {
 }
 
 export function formatDate(date: Date) {
-  // standard format of dayjs is ISO8601 e.g. 2023-06-26T02:00:00+02:00
   return dayjs(date).format();
 }

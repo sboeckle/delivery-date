@@ -80,6 +80,9 @@ describe("delivery dates green delivery tests", async () => {
       isGreenDelivery: true,
     };
     assert.equal(out[0].isGreenDelivery, true);
-    assert.deepEqual(out[0], expectedTopDate);
+    assert.equal(
+      new Date(out[0].deliveryDate).getTime(),
+      new Date(expectedTopDate.deliveryDate).getTime()
+    );
   });
 });

@@ -82,10 +82,9 @@ function generateDeliveryDates({
   const deliveryDates: DeliveryDate[] = [];
   Object.entries(deliveryDays).forEach(([day, numberOfProductsDeliverable]) => {
     if (numberOfProductsDeliverable != numberOfProducts) return;
-    const dateForDelivery = getDateForDayInFuture(today, parseInt(day));
     const deliveryDate = {
       postalCode,
-      deliveryDate: dateForDelivery.toISOString(),
+      deliveryDate: getDateForDayInFuture(today, parseInt(day)),
       isGreenDelivery: isGreenDeliveryDay(parseInt(day)),
     };
     deliveryDates.push(deliveryDate);

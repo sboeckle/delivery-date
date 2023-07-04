@@ -16,5 +16,7 @@ Run the following in terminal of your choice from the project root folder:
 
 ## Tests
 
-Some tests have been added, check the `./test` folder.
-They can be run using `npm run test`
+Some tests have been added for testing the functionality and also because I wanted to try the node test runner that does not need another library (like jest).
+
+- See the `./test` folder.
+- They can be run using `npm run test` (check package.json for details)
